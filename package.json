@@ -8,6 +8,7 @@
   "directories": {
     "test": "test"
   },
+  "repository": "https://github.com/xtoolkit/nuxtjs-device",
   "scripts": {
     "purge": "rm -rf dist/",
     "compile": "rollup -c --name VueApi && NODE_ENV=production rollup -c --name VueApi",

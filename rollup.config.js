@@ -35,22 +35,22 @@ const config = {
   external: ['axios'],
   output: [
     process.env.NODE_ENV !== 'production' && {
-      file: 'dist/vue-api.common.js',
+      file: 'dist/vuejs-api.common.js',
       format: 'cjs'
     },
     process.env.NODE_ENV !== 'production' && {
-      file: 'dist/vue-api.esm.js',
+      file: 'dist/vuejs-api.esm.js',
       format: 'esm'
     },
     process.env.NODE_ENV !== 'production' && {
-      file: 'dist/vue-api.js',
+      file: 'dist/vuejs-api.js',
       format: 'umd',
-      name: 'VueApi'
+      name: 'VueJsApi'
     },
     process.env.NODE_ENV === 'production' && {
-      file: 'dist/vue-api.min.js',
+      file: 'dist/vuejs-api.min.js',
       format: 'umd',
-      name: 'VueApi'
+      name: 'VueJsApi'
     }
   ]
 };
