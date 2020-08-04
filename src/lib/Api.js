@@ -43,10 +43,12 @@ export class Api {
     const methodConfig = this[method](config);
 
     if (typeof methodConfig.params === 'undefined') {
-      methodConfig.params = {};
+      methodConfig.params =
+        typeof config.params === 'undefined' ? {} : config.params;
     }
     if (typeof methodConfig.headers === 'undefined') {
-      methodConfig.headers = {};
+      methodConfig.headers =
+        typeof config.headers === 'undefined' ? {} : config.headers;
     }
 
     methodConfig.headers = {...this.default.headers, ...methodConfig.headers};
