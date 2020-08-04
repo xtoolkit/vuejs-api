@@ -1,10 +1,10 @@
 {
-  "name": "vue-api",
-  "version": "0.0.0",
-  "description": "A Vue.js project",
+  "name": "vuejs-api",
+  "version": "0.0.1",
+  "description": "Api management wrapper for Vue",
   "jsnext:main": "src/index.js",
-  "main": "dist/vue-api.js",
-  "unpkg": "dist/vue-ls.min.js",
+  "main": "dist/vuejs-api.js",
+  "unpkg": "dist/vuejs-api.min.js",
   "directories": {
     "test": "test"
   },
