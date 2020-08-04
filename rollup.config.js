@@ -42,6 +42,11 @@ const config = {
       file: 'dist/vue-api.esm.js',
       format: 'esm'
     },
+    process.env.NODE_ENV !== 'production' && {
+      file: 'dist/vue-api.js',
+      format: 'umd',
+      name: 'VueApi'
+    },
     process.env.NODE_ENV === 'production' && {
       file: 'dist/vue-api.min.js',
       format: 'umd',
