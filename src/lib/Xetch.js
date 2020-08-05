@@ -1,6 +1,6 @@
 import {reactiveToStatic} from '../helper/utils';
 
-export default class Xetch {
+export class Xetch {
   constructor($axios, config) {
     this.$axios = $axios;
     this.error = false;
@@ -168,3 +168,5 @@ export default class Xetch {
     this.$getPage(--this.index);
   }
 }
+
+export default Xetch;

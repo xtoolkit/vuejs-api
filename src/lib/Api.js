@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Xetch from './Xetch';
+import {Xetch} from './Xetch';
 import graphql from '../helper/graphql';
 
 export class Api {
@@ -40,7 +40,7 @@ export class Api {
       method = 'graphql';
     }
 
-    const methodConfig = this[method](config);
+    let methodConfig = this[method](config);
 
     if (typeof methodConfig.params === 'undefined') {
       methodConfig.params =
@@ -52,6 +52,10 @@ export class Api {
     }
 
     methodConfig.headers = {...this.default.headers, ...methodConfig.headers};
+
+    if (typeof this.options.onRequest !== 'undefined') {
+      methodConfig = this.options.onRequest(methodConfig);
+    }
 
     const gate = new Xetch(this.$axios, methodConfig);
     if (asyncMode) {

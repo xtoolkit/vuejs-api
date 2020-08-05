@@ -1,9 +1,17 @@
 import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
 import {terser} from 'rollup-plugin-terser';
 
 const config = {
   input: 'src/index.js',
   plugins: [
+    resolve({
+      mainFields: ['jsnext', 'main', 'browser']
+    }),
+    commonjs({
+      exclude: ['src/*', 'src/components/*']
+    }),
     babel({
       babelrc: false,
       presets: [
@@ -11,6 +19,7 @@ const config = {
           '@babel/preset-env',
           {
             modules: false,
+            // useBuiltIns: 'usage',
             targets: {
               browsers: [
                 '> 1%',
@@ -28,31 +37,45 @@ const config = {
           }
         ]
       ],
-      exclude: 'node_modules/**'
+      plugins: ['@babel/plugin-transform-runtime'],
+      exclude: 'node_modules/**',
+      babelHelpers: 'runtime'
     }),
     process.env.NODE_ENV === 'production' && terser()
   ],
   external: ['axios'],
-  output: [
-    process.env.NODE_ENV !== 'production' && {
-      file: 'dist/vuejs-api.common.js',
-      format: 'cjs'
-    },
-    process.env.NODE_ENV !== 'production' && {
-      file: 'dist/vuejs-api.esm.js',
-      format: 'esm'
-    },
-    process.env.NODE_ENV !== 'production' && {
-      file: 'dist/vuejs-api.js',
-      format: 'umd',
-      name: 'VueJsApi'
-    },
-    process.env.NODE_ENV === 'production' && {
-      file: 'dist/vuejs-api.min.js',
-      format: 'umd',
-      name: 'VueJsApi'
-    }
-  ]
+  output: []
 };
+
+if (process.env.NODE_ENV === 'production') {
+  config.output.push({
+    file: 'dist/vuejs-api.min.js',
+    format: 'iife',
+    name: 'VueJsApi',
+    globals: {
+      axios: 'axios'
+    }
+  });
+} else {
+  config.output.push({
+    file: 'dist/vuejs-api.common.js',
+    format: 'cjs',
+    name: 'VueJsApi'
+  });
+  config.output.push({
+    file: 'dist/vuejs-api.es.js',
+    format: 'es',
+    name: 'VueJsApi'
+  });
+  config.output.push({
+    file: 'dist/vuejs-api.js',
+    format: 'umd',
+    name: 'VueJsApi',
+    globals: {
+      axios: 'axios'
+    },
+    exports: 'named'
+  });
+}
 
 export default config;

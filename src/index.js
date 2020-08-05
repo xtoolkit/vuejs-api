@@ -64,4 +64,6 @@ export function gql() {
   }, '');
 }
 
+export {Api};
+
 export default install;
