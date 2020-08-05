@@ -1,6 +1,6 @@
 {
   "name": "vuejs-api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Api management wrapper for Vue",
   "jsnext:main": "src/index.js",
   "main": "dist/vuejs-api.js",
@@ -19,7 +19,8 @@
   },
   "files": [
     "dist/",
-    "src/"
+    "src/",
+    "nuxt/"
   ],
   "author": "Mehdi Hosseinzade <arshen@outlook.com>",
   "license": "MIT",
