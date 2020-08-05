@@ -15,7 +15,7 @@ Vue.use(install, config);
 
 export default function (ctx, inject) {
   const api = new Api(config);
-  api.updateContext(ctx.app);
+  api.updateContext(ctx);
   ctx.$api = api;
   inject('api', api);
 }

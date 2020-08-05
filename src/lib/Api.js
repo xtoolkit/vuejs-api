@@ -54,7 +54,7 @@ export class Api {
     methodConfig.headers = {...this.default.headers, ...methodConfig.headers};
 
     if (typeof this.options.onRequest !== 'undefined') {
-      methodConfig = this.options.onRequest(methodConfig);
+      methodConfig = this.options.onRequest.apply(this, [methodConfig]);
     }
 
     const gate = new Xetch(this.$axios, methodConfig);
