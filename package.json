@@ -12,7 +12,7 @@
   "repository": "https://github.com/xtoolkit/vuejs-api",
   "scripts": {
     "purge": "rm -rf dist/",
-    "compile": "rollup -c --name VueJsApi && NODE_ENV=production rollup -c --name VueApi",
+    "compile": "rollup -c --name VueJsApi && NODE_ENV=production rollup -c --name VueJsApi",
     "build": "npm run purge && npm run compile",
     "release": "standard-version && git push --follow-tags && npm publish",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
