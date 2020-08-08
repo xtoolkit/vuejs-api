@@ -9,9 +9,7 @@ const config = {
     resolve({
       mainFields: ['jsnext', 'main', 'browser']
     }),
-    commonjs({
-      exclude: ['src/*', 'src/components/*']
-    }),
+    commonjs(),
     babel({
       babelrc: false,
       presets: [

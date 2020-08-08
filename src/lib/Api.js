@@ -27,6 +27,10 @@ export class Api {
     this.init = true;
   }
 
+  manual() {
+    return {};
+  }
+
   gate(method, config, asyncMode) {
     if (typeof config.params === 'undefined') {
       config.params = {};
