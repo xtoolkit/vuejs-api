@@ -1,15 +1,10 @@
 import babel from '@rollup/plugin-babel';
-import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import {terser} from 'rollup-plugin-terser';
 
 const config = {
   input: 'src/index.js',
   plugins: [
-    resolve({
-      mainFields: ['jsnext', 'main', 'browser']
-    }),
-    commonjs(),
     babel({
       babelrc: false,
       presets: [
@@ -17,7 +12,7 @@ const config = {
           '@babel/preset-env',
           {
             modules: false,
-            // useBuiltIns: 'usage',
+            useBuiltIns: 'usage',
             targets: {
               browsers: [
                 '> 1%',
@@ -35,17 +30,20 @@ const config = {
           }
         ]
       ],
-      plugins: ['@babel/plugin-transform-runtime'],
-      exclude: 'node_modules/**',
-      babelHelpers: 'runtime'
-    }),
-    process.env.NODE_ENV === 'production' && terser()
+      exclude: 'node_modules/**'
+    })
   ],
   external: ['axios'],
   output: []
 };
 
 if (process.env.NODE_ENV === 'production') {
+  config.plugins.push(
+    resolve({
+      mainFields: ['jsnext', 'main', 'browser']
+    })
+  );
+  config.plugins.push(terser());
   config.output.push({
     file: 'dist/vuejs-api.min.js',
     format: 'iife',
