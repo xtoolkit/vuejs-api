@@ -18,7 +18,7 @@ function getMethods(context) {
   return modules;
 }
 
-export function install(Vue, options) {
+export function install(Vue, options = {}) {
   let src = null;
   if (typeof options.src !== 'undefined') {
     src = options.src;
