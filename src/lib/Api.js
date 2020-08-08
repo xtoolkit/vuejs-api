@@ -27,8 +27,8 @@ export class Api {
     this.init = true;
   }
 
-  manual() {
-    return {};
+  manual(config) {
+    return config;
   }
 
   gate(method, config, asyncMode) {
