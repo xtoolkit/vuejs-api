@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {Api, installSSR} from 'vuejs-api';
 
-const config = <%= options %>;
+const config = <%= serialize(options, null, 2) %>;
 
 if (typeof config.src !== 'undefined') {
   config.src = require.context(
