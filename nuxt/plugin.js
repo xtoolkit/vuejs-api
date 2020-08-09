@@ -29,7 +29,7 @@ export default function (ctx, inject) {
 
   api.updateMethods(getMethods(config.src));
   if (module.hot) {
-    module.hot.accept(config.id, () => {
+    module.hot.accept(config.src.id, () => {
       window.location.reload();
     });
   }
