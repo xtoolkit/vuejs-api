@@ -1,6 +1,6 @@
 {
   "name": "vuejs-api",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Api management wrapper for Vue",
   "jsnext:main": "src/index.js",
   "main": "dist/vuejs-api.js",
