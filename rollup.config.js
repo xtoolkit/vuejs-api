@@ -26,7 +26,8 @@ const config = {
                 'ChromeAndroid >= 4',
                 'OperaMobile >= 12'
               ]
-            }
+            },
+            corejs: 3
           }
         ]
       ],
