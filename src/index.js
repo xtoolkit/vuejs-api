@@ -1,7 +1,7 @@
 import Api from './lib/Api';
 import mixin from './helper/mixin';
 
-function getMethods(context) {
+export function getMethods(context) {
   const modules = context
     .keys()
     .map(key => ({
@@ -33,10 +33,6 @@ export function install(Vue, options = {}) {
   Vue.prototype.$api = api;
 
   Vue.mixin(mixin);
-  Vue.config.optionMergeStrategies.api = function (parent, child) {
-    if (!parent) return child;
-    if (!child) return parent;
-  };
 
   if (src === null) {
     return false;
