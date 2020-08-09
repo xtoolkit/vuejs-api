@@ -19,6 +19,10 @@ function getMethods(context) {
 }
 
 export function install(Vue, options = {}) {
+  if (typeof Vue.prototype.$api !== 'undefined') {
+    return false;
+  }
+
   let src = null;
   if (typeof options.src !== 'undefined') {
     src = options.src;
