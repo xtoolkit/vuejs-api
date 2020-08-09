@@ -59,6 +59,13 @@ export function install(Vue, options = {}) {
   }
 }
 
+export function installSSR(Vue) {
+  if (typeof Vue.prototype.$api !== 'undefined') {
+    return false;
+  }
+  Vue.mixin(mixin);
+}
+
 export function gql() {
   var tagArgs = arguments;
   return tagArgs[0].reduce(function (accumulator, string, index) {

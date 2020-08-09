@@ -2,14 +2,8 @@ export default {
   beforeCreate() {
     const vmOptions = this.$options;
     this._api = vmOptions.api || false;
-    if (
-      typeof this.$api !== 'undefined' &&
-      this.$api.init === false &&
-      typeof this._uid !== 'undefined'
-    ) {
-      if (this._uid > 0) {
-        this.$api.updateContext(this);
-      }
+    if (typeof this.$api !== 'undefined' && this.$api.init === false) {
+      this.$api.updateContext(this);
     }
   },
   data() {
