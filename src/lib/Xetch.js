@@ -54,6 +54,11 @@ export class Xetch {
         this.size = this.self.pagination.size.apply(this.self);
         this.index = this.self.pagination.index.apply(this.self);
       }
+    } else {
+      if (typeof this.self.pagination !== 'undefined') {
+        this.size = this.self.pagination.size.apply(this.self);
+        this.index = this.self.pagination.index.apply(this.self);
+      }
     }
     this.updateArgs();
   }
