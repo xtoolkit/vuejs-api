@@ -1,41 +1,20 @@
 import {reactiveToStatic} from '../helper/utils';
 
 export class Xetch {
-  constructor($axios, config) {
+  constructor($axios, initial, update, config) {
     this.$axios = $axios;
     this.error = false;
     this.errordata = null;
     this.status = -1;
     this.load = false;
     this.paging = false;
+    this.config = config;
     this.self = {
       arg1: {},
-      arg2: {}
+      arg2: {},
+      update
     };
-    this.intitalConfig(config);
-  }
-
-  intitalConfig(data) {
-    this.self.method = data.method;
-    this.self.url = data.url;
-    this.self.params = data.params;
-    this.self.headers = data.headers;
-    this.self.default = data.default || null;
-    this.data =
-      this.self.default === null ? null : reactiveToStatic(this.self.default);
-    this.onResponse = res => {
-      if (typeof data.onResponse === 'undefined') {
-        this.data = res;
-        return false;
-      }
-      data.onResponse.apply(this, [res]);
-    };
-    if (typeof data.pagination !== 'undefined') {
-      this.self.pagination = data.pagination;
-      this.size = this.self.pagination.size.apply(this.self);
-      this.index = this.self.pagination.index.apply(this.self);
-    }
-    this.updateArgs();
+    this.intitalConfig(initial);
   }
 
   updateArgs() {
@@ -54,6 +33,43 @@ export class Xetch {
     }
   }
 
+  intitalConfig(data, configOnly = false) {
+    this.self.method = data.method;
+    this.self.url = data.url;
+    this.self.params = data.params;
+    this.self.headers = data.headers;
+    this.self.default = data.default || null;
+    if (configOnly === false) {
+      this.data =
+        this.self.default === null ? null : reactiveToStatic(this.self.default);
+      this.onResponse = res => {
+        if (typeof data.onResponse === 'undefined') {
+          this.data = res;
+          return false;
+        }
+        data.onResponse.apply(this, [res]);
+      };
+      if (typeof data.pagination !== 'undefined') {
+        this.self.pagination = data.pagination;
+        this.size = this.self.pagination.size.apply(this.self);
+        this.index = this.self.pagination.index.apply(this.self);
+      }
+    }
+    this.updateArgs();
+  }
+
+  update(config = {}) {
+    if (typeof config.params === 'undefined') {
+      config.params = {};
+    }
+    if (typeof config.headers === 'undefined') {
+      config.headers = {};
+    }
+    this.config = config;
+    const data = reactiveToStatic(this.self.update(config));
+    this.intitalConfig(data, true);
+  }
+
   $fetch() {
     this.normalFetch();
     return this;
@@ -64,17 +80,33 @@ export class Xetch {
     return this;
   }
 
-  statusHandle(res) {
-    return typeof res !== 'undefined' && typeof res.status !== 'undefined'
-      ? res.status
-      : 500;
+  errorHanlde(e) {
+    let data = null;
+    let status = -1;
+    if (e.response) {
+      // console.log(e.response.headers);
+      status = e.response.status;
+      data = e.response.data;
+    } else if (e.request) {
+      data = e.request;
+    } else {
+      data = e.message;
+    }
+    return {
+      data,
+      status
+    };
   }
 
-  normalFetch() {
+  prepairCancel() {
     const die = this.$axios.CancelToken.source();
     this.self[this.self.method === 'get' ? 'arg1' : 'arg2'].cancelToken =
       die.token;
     this.cancel = die.cancel;
+  }
+
+  normalFetch() {
+    this.prepairCancel();
     this.$axios[this.self.method](this.self.url, this.self.arg1, this.self.arg2)
       .then(req => {
         this.status = req.status;
@@ -86,12 +118,14 @@ export class Xetch {
         this.load = true;
         this.paging = false;
         this.error = true;
-        this.errordata = e.response;
-        this.status = this.statusHandle(e.response);
+        const ex = this.errorHanlde(e);
+        this.errordata = ex.data;
+        this.status = ex.status;
       });
   }
 
   async asyncFetch() {
+    this.prepairCancel();
     try {
       const req = await this.$axios[this.self.method](
         this.self.url,
@@ -103,8 +137,9 @@ export class Xetch {
       this.load = true;
     } catch (e) {
       this.error = true;
-      this.errordata = e.response;
-      this.status = this.statusHandle(e.response);
+      const ex = this.errorHanlde(e);
+      this.errordata = ex.data;
+      this.status = ex.status;
     }
   }
 

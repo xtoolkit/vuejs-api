@@ -44,24 +44,24 @@ export class Api {
       method = 'graphql';
     }
 
-    let methodConfig = this[method](config);
+    let initialConfig = this[method](config);
 
-    if (typeof methodConfig.params === 'undefined') {
-      methodConfig.params =
+    if (typeof initialConfig.params === 'undefined') {
+      initialConfig.params =
         typeof config.params === 'undefined' ? {} : config.params;
     }
-    if (typeof methodConfig.headers === 'undefined') {
-      methodConfig.headers =
+    if (typeof initialConfig.headers === 'undefined') {
+      initialConfig.headers =
         typeof config.headers === 'undefined' ? {} : config.headers;
     }
 
-    methodConfig.headers = {...this.default.headers, ...methodConfig.headers};
+    initialConfig.headers = {...this.default.headers, ...initialConfig.headers};
 
     if (typeof this.options.onRequest !== 'undefined') {
-      methodConfig = this.options.onRequest.apply(this, [methodConfig]);
+      initialConfig = this.options.onRequest.apply(this, [initialConfig]);
     }
 
-    const gate = new Xetch(this.$axios, methodConfig);
+    const gate = new Xetch(this.$axios, initialConfig, this[method], config);
     if (asyncMode) {
       return gate.fetch();
     }

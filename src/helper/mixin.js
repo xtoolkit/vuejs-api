@@ -23,6 +23,11 @@ export default {
     Object.keys(this._api).forEach(item => {
       const config = this._api[item];
       if (Object.keys(config).length === 0) {
+        this[item] = {
+          load: false,
+          error: false,
+          paging: false
+        };
         return false;
       }
       let method = config.method;
