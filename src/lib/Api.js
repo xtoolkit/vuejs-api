@@ -31,7 +31,7 @@ export class Api {
     return config;
   }
 
-  gate(method, config, asyncMode) {
+  gate(method, config, mode) {
     if (typeof config.params === 'undefined') {
       config.params = {};
     }
@@ -62,18 +62,25 @@ export class Api {
     }
 
     const gate = new Xetch(this.$axios, initialConfig, this[method], config);
-    if (asyncMode) {
+    if (mode === 'request') {
       return gate.fetch();
+    } else if (mode === 'initial') {
+      return gate.initial();
+    } else if (mode === 'fetch') {
+      return gate.$fetch();
     }
-    return gate.$fetch();
-  }
-
-  fetch(method, config = {}) {
-    return this.gate(method, config, false);
   }
 
   request(method, config = {}) {
-    return this.gate(method, config, true);
+    return this.gate(method, config, 'request');
+  }
+
+  fetch(method, config = {}) {
+    return this.gate(method, config, 'fetch');
+  }
+
+  initial(method, config = {}) {
+    return this.gate(method, config, 'initial');
   }
 }
 

@@ -75,6 +75,15 @@ export class Xetch {
     this.intitalConfig(data, true);
   }
 
+  initial() {
+    this.data = reactiveToStatic(this.config.initial.data);
+    this.load = reactiveToStatic(this.config.initial.load || true);
+    this.error = reactiveToStatic(this.config.initial.error || false);
+    this.errordata = reactiveToStatic(this.config.initial.errordata || null);
+    this.status = reactiveToStatic(this.config.initial.status || 200);
+    return this;
+  }
+
   $fetch() {
     this.normalFetch();
     return this;
