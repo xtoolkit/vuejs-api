@@ -45,6 +45,9 @@ export default {
       } else if (typeof config.headers !== 'undefined') {
         options.headers = config.headers;
       }
+      if (typeof config.query !== 'undefined') {
+        options.query = config.query;
+      }
       this[item] = this.$api.fetch(method, options);
     }
   },
