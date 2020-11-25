@@ -20,7 +20,7 @@ export default {
     if (this._api === false) {
       return false;
     }
-    for (const item in this._api) {
+    Object.keys(this._api).forEach(item => {
       const config = this._api[item];
       if (Object.keys(config).length === 0) {
         this[item] = {
@@ -49,7 +49,7 @@ export default {
         options.query = config.query;
       }
       this[item] = this.$api.fetch(method, options);
-    }
+    });
   },
   beforeDestroy() {
     if (this._api === false) {
