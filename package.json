@@ -2,48 +2,53 @@
   "name": "vuejs-api",
   "version": "1.1.0",
   "description": "Api management wrapper for Vue",
+  "author": "Mehdi Hosseinzade <arshen@outlook.com>",
+  "scripts": {
+    "build": "npm run purge && npm run compile",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "compile": "rollup -c --name VueJsApi && NODE_ENV=production rollup -c --name VueJsApi",
+    "purge": "rm -rf dist/",
+    "release": "standard-version && git push --follow-tags && npm publish"
+  },
   "jsnext:main": "src/index.js",
   "main": "dist/vuejs-api.js",
-  "unpkg": "dist/vuejs-api.min.js",
   "module": "dist/vuejs-api.es.js",
-  "directories": {
-    "test": "test"
-  },
-  "repository": "https://github.com/xtoolkit/vuejs-api",
-  "scripts": {
-    "purge": "rm -rf dist/",
-    "compile": "rollup -c --name VueJsApi && NODE_ENV=production rollup -c --name VueJsApi",
-    "build": "npm run purge && npm run compile",
-    "release": "standard-version && git push --follow-tags && npm publish",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
-  },
+  "unpkg": "dist/vuejs-api.min.js",
   "files": [
     "dist/",
     "src/",
     "nuxt/"
   ],
-  "author": "Mehdi Hosseinzade <arshen@outlook.com>",
-  "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.12.0",
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
-    "vue": "latest"
+    "vue": "^2.6.12"
   },
   "devDependencies": {
-    "rollup": "^2.23.0",
-    "@rollup/plugin-babel": "^5.1.0",
-    "@rollup/plugin-node-resolve": "^8.4.0",
-    "rollup-plugin-terser": "^6.1.0",
-    "@vue/eslint-config-prettier": "^6.0.0",
     "@babel/plugin-transform-runtime": "7.11.0",
     "@babel/preset-env": "^7.11.0",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@vue/cli-plugin-unit-jest": "^4.5.8",
+    "@vue/cli-service": "^4.5.8",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/test-utils": "^1.0.3",
     "babel-eslint": "^10.1.0",
-    "prettier": "^2.0.0",
     "eslint": "^7.4.0",
+    "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11",
-    "standard-version": "latest"
-  }
+    "prettier": "^2.0.0",
+    "rollup": "^2.23.0",
+    "rollup-plugin-terser": "^6.1.0",
+    "standard-version": "latest",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/xtoolkit/vuejs-api"
 }

@@ -3,7 +3,7 @@ export default {
     const vmOptions = this.$options;
     this._api = vmOptions.api || false;
     if (typeof this.$api !== 'undefined' && this.$api.init === false) {
-      this.$api.updateContext(this);
+      this.$api.setup(this);
     }
   },
   data() {

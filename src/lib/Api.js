@@ -1,19 +1,38 @@
 import axios from 'axios';
 import {Xetch} from './Xetch';
+import {fixContext, unReactive, merge} from '../helper/utils';
 import graphql from '../helper/graphql';
 
 export class Api {
   constructor(options) {
-    this.$axios = axios.create(options.axios || {});
-    this.$axios.CancelToken = axios.CancelToken;
-    this.$axios.isCancel = axios.isCancel;
     this.options = options;
-    this.default = {
-      headers: {}
+    this.global = {
+      headers: {},
+      params: {},
+      options: {},
+      hook: {
+        onUploadProgress: [],
+        onDownloadProgress: [],
+        onRequest: [],
+        onResponse: []
+      }
     };
+    merge(this.global, options.default);
     this.ctx = null;
     this.init = false;
+    this.setupAxios();
     Api.prototype['graphql'] = graphql;
+  }
+
+  setup(ctx) {
+    this.ctx = ctx;
+    this.init = true;
+  }
+
+  setupAxios() {
+    this.$axios = axios.create(this.options.axios || {});
+    this.$axios.CancelToken = axios.CancelToken;
+    this.$axios.isCancel = axios.isCancel;
   }
 
   updateMethods(methods) {
@@ -22,46 +41,44 @@ export class Api {
     });
   }
 
-  updateContext(ctx) {
-    this.ctx = ctx;
-    this.init = true;
-  }
-
   manual(config) {
     return config;
   }
 
   gate(method, config, mode) {
-    if (typeof config.params === 'undefined') {
-      config.params = {};
-    }
-    if (typeof config.headers === 'undefined') {
-      config.headers = {};
-    }
+    const op = ['params', 'headers', 'options', 'hook'];
+    fixContext(op, config);
+    config = unReactive(config);
 
     if (/^graphql\//.test(method)) {
       config.client = method.replace(/^graphql\//, '');
       method = 'graphql';
     }
 
-    let initialConfig = this[method](config);
+    const _config = this.global;
+    merge(_config, config);
+    let initialConfig = this[method](_config);
 
-    if (typeof initialConfig.params === 'undefined') {
-      initialConfig.params =
-        typeof config.params === 'undefined' ? {} : config.params;
-    }
-    if (typeof initialConfig.headers === 'undefined') {
-      initialConfig.headers =
-        typeof config.headers === 'undefined' ? {} : config.headers;
-    }
+    fixContext(op, initialConfig, config);
+    _config.hook.onRequest.forEach(f => {
+      if (typeof f === 'function') {
+        initialConfig = f(initialConfig);
+      }
+    });
 
-    initialConfig.headers = {...this.default.headers, ...initialConfig.headers};
-
-    if (typeof this.options.onRequest !== 'undefined') {
-      initialConfig = this.options.onRequest.apply(this, [initialConfig]);
+    if (typeof initialConfig.onResponse !== 'undefined') {
+      _config.hook.onResponse.push(initialConfig.onResponse);
     }
 
-    const gate = new Xetch(this.$axios, initialConfig, this[method], config);
+    const gate = new Xetch({
+      axios: this.$axios,
+      initial: initialConfig,
+      method: this[method],
+      config,
+      options: _config.options,
+      hook: _config.hook
+    });
+
     if (mode === 'request') {
       return gate.fetch();
     } else if (mode === 'initial') {

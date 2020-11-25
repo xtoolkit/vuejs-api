@@ -1,8 +1,8 @@
-import {reactiveToStatic} from '../helper/utils';
+import {reactiveToStatic, fixContext} from '../helper/utils';
 
 export class Xetch {
-  constructor($axios, initial, update, config) {
-    this.$axios = $axios;
+  constructor({axios, initial, method, config, options, hook}) {
+    this.$axios = axios;
     this.error = false;
     this.errordata = null;
     this.status = -1;
@@ -10,26 +10,33 @@ export class Xetch {
     this.paging = false;
     this.config = config;
     this.self = {
-      arg1: {},
-      arg2: {},
-      update
+      data: {},
+      config: options,
+      update: method,
+      onResponse: hook.onResponse
     };
+    if (hook.onUploadProgress.length > 0) {
+      this.self.config.onUploadProgress = hook.onUploadProgress;
+    }
+    if (hook.onDownloadProgress.length > 0) {
+      this.self.config.onDownloadProgress = hook.onDownloadProgress;
+    }
     this.intitalConfig(initial);
   }
 
+  get poster() {
+    return ['post', 'put', 'path'].includes(this.self.method);
+  }
+
   updateArgs() {
-    if (this.self.method === 'get') {
-      this.self.arg1.params = this.self.params || {};
-      this.self.arg1.headers = this.self.headers || {};
-      if (Object.keys(this.self.arg1.headers).length === 0) {
-        this.self.arg1.headers = undefined;
-      }
+    const params = this.self.params || {};
+    const headers = this.self.headers || undefined;
+    if (this.poster) {
+      this.self.data = params;
+      this.self.config.headers = headers;
     } else {
-      this.self.arg1 = this.self.params || {};
-      this.self.arg2.headers = this.self.headers || {};
-      if (Object.keys(this.self.arg2.headers).length === 0) {
-        this.self.arg2.headers = undefined;
-      }
+      this.self.config.params = params;
+      this.self.config.headers = headers;
     }
   }
 
@@ -42,13 +49,6 @@ export class Xetch {
     if (configOnly === false) {
       this.data =
         this.self.default === null ? null : reactiveToStatic(this.self.default);
-      this.onResponse = res => {
-        if (typeof data.onResponse === 'undefined') {
-          this.data = res;
-          return false;
-        }
-        data.onResponse.apply(this, [res]);
-      };
       if (typeof data.pagination !== 'undefined') {
         this.self.pagination = data.pagination;
         this.size = this.self.pagination.size.apply(this.self);
@@ -64,12 +64,7 @@ export class Xetch {
   }
 
   update(config = {}) {
-    if (typeof config.params === 'undefined') {
-      config.params = {};
-    }
-    if (typeof config.headers === 'undefined') {
-      config.headers = {};
-    }
+    fixContext(['params', 'headers'], config);
     this.config = config;
     const data = reactiveToStatic(this.self.update(config));
     this.intitalConfig(data, true);
@@ -84,17 +79,30 @@ export class Xetch {
     return this;
   }
 
-  $fetch() {
-    this.normalFetch();
-    return this;
+  prepairCancel() {
+    const die = this.$axios.CancelToken.source();
+    this.self.config.cancelToken = die.token;
+    this.cancel = die.cancel;
   }
 
-  async fetch() {
-    await this.asyncFetch();
-    return this;
+  onResponse(res) {
+    if (this.self.onResponse.length === 0) {
+      this.data = res;
+      return false;
+    }
+    this.self.onResponse.forEach(f => {
+      f.apply(this, [res]);
+    });
   }
 
-  errorHanlde(e) {
+  onSeccessful({status, data}) {
+    this.status = status;
+    this.onResponse(data);
+    this.load = true;
+    this.paging = false;
+  }
+
+  onFailed(e) {
     let data = null;
     let status = -1;
     if (e.response) {
@@ -106,59 +114,40 @@ export class Xetch {
     } else {
       data = e.message;
     }
-    return {
-      data,
-      status
-    };
+    this.load = true;
+    this.paging = false;
+    this.error = true;
+    this.errordata = data;
+    this.status = status;
   }
 
-  prepairCancel() {
-    const die = this.$axios.CancelToken.source();
-    this.self[this.self.method === 'get' ? 'arg1' : 'arg2'].cancelToken =
-      die.token;
-    this.cancel = die.cancel;
+  get gate() {
+    return this.$axios[this.self.method](
+      this.self.url,
+      this.poster ? this.self.data : this.self.config,
+      this.poster ? this.self.config : undefined
+    );
   }
 
-  normalFetch() {
+  $fetch() {
     this.prepairCancel();
-    this.$axios[this.self.method](this.self.url, this.self.arg1, this.self.arg2)
-      .then(req => {
-        this.status = req.status;
-        this.onResponse(req.data);
-        this.load = true;
-        this.paging = false;
-      })
-      .catch(e => {
-        this.load = true;
-        this.paging = false;
-        this.error = true;
-        const ex = this.errorHanlde(e);
-        this.errordata = ex.data;
-        this.status = ex.status;
-      });
+    this.gate.then(res => this.onSeccessful(res)).catch(e => this.onFailed(e));
+    return this;
   }
 
-  async asyncFetch() {
+  async fetch() {
     this.prepairCancel();
     try {
-      const req = await this.$axios[this.self.method](
-        this.self.url,
-        this.self.arg1,
-        this.self.arg2
-      );
-      this.status = req.status;
-      this.onResponse(req.data);
-      this.load = true;
+      const res = await this.gate;
+      console.log(res);
+      this.onSeccessful(res);
     } catch (e) {
-      this.error = true;
-      const ex = this.errorHanlde(e);
-      this.errordata = ex.data;
-      this.status = ex.status;
+      this.onFailed(e);
     }
+    return this;
   }
 
   // Tools
-
   _getPage(i, append = false) {
     this.error = false;
     if (!append) {
@@ -177,12 +166,12 @@ export class Xetch {
 
   async getPage(i, append = false) {
     this._getPage(i, append);
-    await this.asyncFetch();
+    await this.fetch();
   }
 
   $getPage(i, append = false) {
     this._getPage(i, append);
-    this.normalFetch();
+    this.$fetch();
   }
 
   async refresh() {
