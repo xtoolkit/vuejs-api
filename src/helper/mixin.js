@@ -20,7 +20,7 @@ export default {
     if (this._api === false) {
       return false;
     }
-    Object.keys(this._api).forEach(item => {
+    for (const item in this._api) {
       const config = this._api[item];
       if (Object.keys(config).length === 0) {
         this[item] = {
@@ -30,18 +30,23 @@ export default {
         };
         return false;
       }
+      const options = {};
       let method = config.method;
       if (typeof method === 'function') {
         method = method.apply(this);
       }
       if (typeof config.params === 'function') {
-        config.params = config.params.apply(this);
+        options.params = config.params.apply(this);
+      } else if (typeof config.params !== 'undefined') {
+        options.params = config.params;
       }
       if (typeof config.headers === 'function') {
-        config.headers = config.headers.apply(this);
+        options.headers = config.headers.apply(this);
+      } else if (typeof config.headers !== 'undefined') {
+        options.headers = config.headers;
       }
-      this[item] = this.$api.fetch(method, config);
-    });
+      this[item] = this.$api.fetch(method, options);
+    }
   },
   beforeDestroy() {
     if (this._api === false) {
