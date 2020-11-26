@@ -26,7 +26,8 @@ export default {
         this[item] = {
           load: false,
           error: false,
-          paging: false
+          paging: false,
+          cancel: () => {}
         };
         return false;
       }
