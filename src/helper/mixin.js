@@ -49,6 +49,9 @@ export default {
       if (typeof config.query !== 'undefined') {
         options.query = config.query;
       }
+      if (typeof config.onResponse === 'function') {
+        options.onResponse = config.onResponse;
+      }
       this[item] = this.$api.fetch(method, options);
     });
   },
