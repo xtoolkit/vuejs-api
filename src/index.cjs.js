@@ -8,5 +8,3 @@ export default {
   useApi,
   gql
 };
-
-export {getMethods, useApi, gql};

@@ -1,78 +1,90 @@
-import babel from '@rollup/plugin-babel';
+import buble from '@rollup/plugin-buble';
+import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
+import pkg from './package.json';
 
-const config = {
-  input: 'src/index.js',
-  plugins: [
-    babel({
-      babelrc: false,
-      presets: [
-        [
-          '@babel/preset-env',
-          {
-            modules: false,
-            useBuiltIns: 'usage',
-            targets: {
-              browsers: [
-                '> 1%',
-                'Chrome >= 14',
-                'Safari >= 4',
-                'Firefox >= 4',
-                'Opera >= 10',
-                'Edge >= 41',
-                'ie >= 9',
-                'iOS >= 6',
-                'ChromeAndroid >= 4',
-                'OperaMobile >= 12'
-              ]
-            },
-            corejs: 3
-          }
-        ]
-      ],
-      exclude: 'node_modules/**'
-    })
-  ],
-  external: ['axios'],
-  output: []
-};
+const banner = `/*!
+ * Vuejs-Api v${pkg.version}
+ * (c) ${new Date().getFullYear()} Mehdi HosseinZade
+ * @license MIT
+ */`;
 
-if (process.env.NODE_ENV === 'production') {
-  config.plugins.push(
-    resolve({
-      mainFields: ['jsnext', 'main', 'browser']
-    })
-  );
-  config.plugins.push(terser());
-  config.output.push({
-    file: 'dist/vuejs-api.min.js',
-    format: 'iife',
-    name: 'VueJsApi',
-    globals: {
-      axios: 'axios'
-    }
-  });
-} else {
-  config.output.push({
-    file: 'dist/vuejs-api.common.js',
-    format: 'cjs',
-    name: 'VueJsApi'
-  });
-  config.output.push({
-    file: 'dist/vuejs-api.es.js',
+const configs = [
+  {
+    input: 'src/index.js',
+    file: 'dist/vuejs-api.esm.js',
     format: 'es',
-    name: 'VueJsApi'
-  });
-  config.output.push({
-    file: 'dist/vuejs-api.js',
-    format: 'umd',
-    name: 'VueJsApi',
-    globals: {
-      axios: 'axios'
-    },
-    exports: 'named'
-  });
+    browser: true,
+    env: 'development'
+  },
+  {
+    input: 'src/index.cjs.js',
+    file: 'dist/vuejs-api.global.js',
+    format: 'iife',
+    minify: true,
+    env: 'production'
+  },
+  {
+    input: 'src/index.cjs.js',
+    file: 'dist/vuejs-api.cjs.js',
+    format: 'cjs',
+    env: 'development'
+  }
+];
+
+function createEntries() {
+  return configs.map(c => createEntry(c));
 }
 
-export default config;
+function createEntry(config) {
+  const c = {
+    external: ['vue', 'axios'],
+    input: config.input,
+    plugins: [],
+    output: {
+      banner,
+      file: config.file,
+      format: config.format,
+      globals: {
+        vue: 'Vue',
+        axios: 'axios'
+      }
+    },
+    onwarn: (msg, warn) => {
+      if (!/Circular/.test(msg)) {
+        warn(msg);
+      }
+    }
+  };
+
+  if (config.format === 'iife' || config.format === 'umd') {
+    c.output.name = c.output.name || 'VuejsApi';
+  }
+
+  c.plugins.push(
+    replace({
+      __VERSION__: pkg.version,
+      __DEV__:
+        config.format !== 'iife' && !config.browser
+          ? `(process.env.NODE_ENV !== 'production')`
+          : config.env !== 'production'
+    })
+  );
+
+  if (config.transpile !== false) {
+    c.plugins.push(buble());
+  }
+
+  c.plugins.push(resolve());
+  c.plugins.push(commonjs());
+
+  if (config.minify) {
+    c.plugins.push(terser({module: config.format === 'es'}));
+  }
+
+  return c;
+}
+
+export default createEntries();
