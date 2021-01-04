@@ -1,7 +1,31 @@
 import {isRef, unref} from 'vue';
 
-export const unReactive = function (data) {
-  let out = isRef(data) ? unref(data) : data;
+export function getMethods(context) {
+  const modules = {};
+  const keys = context.keys();
+  keys.forEach(key => {
+    modules[
+      key.replace(/^\//, '').replace(/^\.\//, '').replace(/\.js$/, '')
+    ] = context(key).default;
+  });
+  return modules;
+}
+
+export function hotReload(hot, id, fn) {
+  if (hot) {
+    hot.accept(id, () => {
+      fn();
+    });
+  }
+}
+
+export function unReactive(data) {
+  let out;
+  if (typeof isRef !== 'undefined' && isRef(data)) {
+    out = unref(data);
+  } else {
+    out = data;
+  }
   const type = typeof out;
   if (type === 'object' || Array.isArray(out)) {
     return JSON.parse(JSON.stringify(out));
@@ -13,4 +37,13 @@ export const unReactive = function (data) {
     return '' + out;
   }
   return false;
-};
+}
+
+export function arrayInclude(array, target) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === target) {
+      return true;
+    }
+  }
+  return false;
+}

@@ -1,8 +1,10 @@
 import {unReactive} from '../function/utils';
+import {arrayInclude} from '../function/utils';
 
 export class Xetch {
-  constructor({axios, api, config, globalConfig, context}) {
-    this.$axios = axios;
+  constructor({ver, axios, api, config, globalConfig, context}) {
+    this.ver = ver;
+    this.axios = axios;
     this.apiContext = api;
     this.context = context;
 
@@ -39,7 +41,7 @@ export class Xetch {
   }
 
   get hasRequestData() {
-    return ['post', 'put', 'path', 'delete'].includes(this.config.method);
+    return arrayInclude(['post', 'put', 'path', 'delete'], this.config.method);
   }
 
   updateConfig(config) {
@@ -64,9 +66,9 @@ export class Xetch {
         const item = this.preConfigs[config][i];
         const type = typeof item;
         if (
-          this.hooks.includes(i) &&
+          arrayInclude(this.hooks, i) &&
           type === 'function' &&
-          !this.hook[i].includes(item)
+          !arrayInclude(this.hook[i], item)
         ) {
           this.hook[i].push(item);
           continue;
@@ -154,7 +156,7 @@ export class Xetch {
   }
 
   prepairCancel() {
-    const die = this.$axios.CancelToken.source();
+    const die = this.axios.CancelToken.source();
     this.fetchConfig.cancelToken = die.token;
     this.state.cancel = (x = 'cancelled') => {
       this.state.errordata = x;
@@ -200,7 +202,7 @@ export class Xetch {
     this.hook.onRequest.forEach(fn => {
       fn.apply(this);
     });
-    const gate = this.$axios[this.config.method || 'get'](
+    const gate = this.axios[this.config.method || 'get'](
       this.config.url,
       this.hasRequestData ? this.requestData : this.fetchConfig,
       this.hasRequestData ? this.fetchConfig : undefined
@@ -224,7 +226,7 @@ export class Xetch {
     const init = unReactive(initial);
     ['data', 'loading', 'error', 'errordata', 'status'].forEach(i => {
       if (typeof init[i] !== 'undefined') {
-        this.context.value[i] = init[i];
+        this.state[i] = init[i];
       }
     });
     return this.context;
@@ -232,7 +234,7 @@ export class Xetch {
 
   // Tools
   get state() {
-    return this.context.value;
+    return this.ver === 3 ? this.context.value : this.context;
   }
 
   get data() {

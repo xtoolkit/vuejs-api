@@ -4,14 +4,21 @@ import {Xetch} from './Xetch';
 import graphql from '../function/graphql';
 
 export class Api {
-  constructor(options, ctx) {
-    this.ctx = ctx._context;
+  constructor(ver, options) {
+    this.ver = ver;
+    this.init = false;
+    this.ctx = {};
     this.options = options;
     this.methods = {
       manual: config => config,
       graphql: config => graphql.apply(this, [config])
     };
     this.setupAxios();
+  }
+
+  updateContext(ctx) {
+    this.ctx = ctx;
+    this.init = true;
   }
 
   setupAxios() {
@@ -31,7 +38,7 @@ export class Api {
   }
 
   createContext() {
-    return ref({
+    const context = {
       data: null,
       loading: true,
       appending: false,
@@ -39,7 +46,8 @@ export class Api {
       errordata: null,
       status: -1,
       cancel: () => {}
-    });
+    };
+    return this.ver === 3 ? ref(context) : context;
   }
 
   gate(method, config, mode) {
@@ -49,6 +57,7 @@ export class Api {
     }
 
     const gate = new Xetch({
+      ver: this.ver,
       axios: this.$axios,
       api: this.methods[method],
       config,

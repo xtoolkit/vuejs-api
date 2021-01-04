@@ -20,7 +20,7 @@ describe('single target hooks', () => {
       }
     };
     const {vm} = plugin(InstallPlugin, options);
-    await vm.api.promise('user/list');
+    await vm.$api.promise('user/list');
     expect(onRequest).toBe(url);
     expect(onResponse).toBe(1);
   });
@@ -32,7 +32,7 @@ describe('single target hooks', () => {
       methods
     };
     const {vm} = plugin(InstallPlugin, options);
-    await vm.api.promise('user/list', {
+    await vm.$api.promise('user/list', {
       onRequest() {
         onRequest = this.config.url;
       },
@@ -64,7 +64,7 @@ describe('single target hooks', () => {
       }
     };
     const {vm} = plugin(InstallPlugin, options);
-    await vm.api.promise('user/list');
+    await vm.$api.promise('user/list');
     expect(onRequest).toBe(url);
     expect(onResponse).toBe(1);
   });
@@ -97,7 +97,7 @@ describe('single target hooks', () => {
       }
     };
     const {vm} = plugin(InstallPlugin, options);
-    await vm.api.promise('user/list', {
+    await vm.$api.promise('user/list', {
       onRequest() {
         onRequest = onRequest === 'plugin' ? 'component' : '';
       },
@@ -115,7 +115,7 @@ describe('http hooks', () => {
 
   it('set onDownloadProgress', async () => {
     let progress = 0;
-    const req = vm.api.fetch('manual', {
+    const req = vm.$api.fetch('manual', {
       url: 'https://httpbin.org/image/jpeg',
       onDownloadProgress(e) {
         progress = (e.loaded * 100) / e.total;
@@ -131,7 +131,7 @@ describe('http hooks', () => {
     for (let i = 0; i < 1000; i++) {
       params['params_' + i] = 'test';
     }
-    const req = vm.api.fetch('manual', {
+    const req = vm.$api.fetch('manual', {
       method: 'post',
       params,
       url: 'https://httpbin.org/response-headers',

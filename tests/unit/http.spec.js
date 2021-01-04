@@ -7,13 +7,13 @@ describe('http request test', () => {
   });
 
   it('basic', async () => {
-    const req = await vm.api.promise('user/list');
+    const req = await vm.$api.promise('user/list');
     expect(req.value.status).toBe(200);
     expect(req.value.error).toBe(false);
   });
 
   it('with options', async () => {
-    const req = await vm.api.promise('manual', {
+    const req = await vm.$api.promise('manual', {
       url: 'https://httpbin.org/basic-auth/foo/bar',
       options: {
         auth: {
@@ -28,7 +28,7 @@ describe('http request test', () => {
   });
 
   it('faild response', async () => {
-    const req = await vm.api.promise('manual', {
+    const req = await vm.$api.promise('manual', {
       url: 'https://httpbin.org/test'
     });
     expect(req.value.status).toBe(404);
@@ -38,7 +38,7 @@ describe('http request test', () => {
 
   it('faild request', async () => {
     console.error = jest.fn();
-    const req = await vm.api.promise('manual', {
+    const req = await vm.$api.promise('manual', {
       url: 'http://thisisnotaserver/foo'
     });
     expect(req.value.status).toBe(-1);

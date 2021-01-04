@@ -5,11 +5,12 @@ class CustomSequencer extends Sequencer {
     const copyTests = Array.from(tests);
     const regex = /[/\\]+([a-zA-Z0-9-_]+)(\.spec)*\.js$/;
     const out = [];
-    out.push(copyTests.find(x => regex.exec(x.path)[1] === 'unreactive'));
-    out.push(copyTests.find(x => regex.exec(x.path)[1] === 'install'));
-    out.push(copyTests.find(x => regex.exec(x.path)[1] === 'http'));
+    const priority = ['unreactive', 'gql', 'install', 'http'];
+    priority.forEach(test => {
+      out.push(copyTests.find(x => regex.exec(x.path)[1] === test));
+    });
     copyTests.forEach(x => {
-      if (!['install', 'http', 'unreactive'].includes(regex.exec(x.path)[1])) {
+      if (!priority.includes(regex.exec(x.path)[1])) {
         out.push(x);
       }
     });

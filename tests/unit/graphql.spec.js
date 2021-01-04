@@ -32,7 +32,7 @@ describe('graphql test', () => {
 
   it('select other definded endpoint', async () => {
     const {vm} = plugin(InstallPlugin, options);
-    const req = await vm.api.promise('graphql/tmdb', {
+    const req = await vm.$api.promise('graphql/tmdb', {
       query: gql`
         query {
           movies {
@@ -48,7 +48,7 @@ describe('graphql test', () => {
 
   it('select other undefinded endpoint', async () => {
     const {vm} = plugin(InstallPlugin);
-    const req = await vm.api.promise(
+    const req = await vm.$api.promise(
       'graphql:https://countries.trevorblades.com/',
       {
         query: gql`

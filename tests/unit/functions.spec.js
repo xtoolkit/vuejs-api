@@ -8,7 +8,7 @@ describe('other Api function test', () => {
   it('manual', async () => {
     let params;
     let single;
-    const req = await vm.api.promise('manual', {
+    const req = await vm.$api.promise('manual', {
       url: 'https://cloudflare.com/cdn-cgi/trace',
       params: {
         rd: 123
@@ -44,7 +44,7 @@ describe('other Api function test', () => {
   }, 6000);
 
   it('initial method check', async () => {
-    const req = vm.api.initial('user/list', {
+    const req = vm.$api.initial('user/list', {
       params: {
         pagination: {
           page: 0
@@ -72,7 +72,7 @@ describe('other Api function test', () => {
   }, 6000);
 
   it('initial method with empty input', () => {
-    const req = vm.api.initial('user/list', {
+    const req = vm.$api.initial('user/list', {
       params: {
         pagination: {
           page: 0
@@ -80,18 +80,18 @@ describe('other Api function test', () => {
       }
     });
     expect(req.value.pagination.page).toBe(0);
-    const req2 = vm.api.initial('user/list');
+    const req2 = vm.$api.initial('user/list');
     expect(req2.value.data.pages).toBe(1);
   }, 6000);
 
   it('undefined method', () => {
-    expect(vm.api.gate('user/list', {})).toBe(undefined);
+    expect(vm.$api.gate('user/list', {})).toBe(undefined);
   }, 6000);
 });
 
 describe('other Xetch function test', () => {
   it('promise methods', async () => {
-    const req = await vm.api.promise('user/list', {
+    const req = await vm.$api.promise('user/list', {
       params: {
         pagination: {
           page: 3
@@ -114,7 +114,7 @@ describe('other Xetch function test', () => {
   });
 
   it('fetch methods', async () => {
-    const req = await vm.api.promise('user/list', {
+    const req = await vm.$api.promise('user/list', {
       params: {
         pagination: {
           page: 3

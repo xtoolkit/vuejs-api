@@ -1,5 +1,4 @@
 import buble from '@rollup/plugin-buble';
-import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
@@ -62,16 +61,6 @@ function createEntry(config) {
   if (config.format === 'iife' || config.format === 'umd') {
     c.output.name = c.output.name || 'VuejsApi';
   }
-
-  c.plugins.push(
-    replace({
-      __VERSION__: pkg.version,
-      __DEV__:
-        config.format !== 'iife' && !config.browser
-          ? `(process.env.NODE_ENV !== 'production')`
-          : config.env !== 'production'
-    })
-  );
 
   if (config.transpile !== false) {
     c.plugins.push(buble());

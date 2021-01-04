@@ -5,13 +5,13 @@
 <script>
   export default {
     name: 'Test',
-    inject: ['api'],
+    api: {},
     computed: {
       install() {
-        return this.api.manual('Vuejs-api installed!');
+        return this.$api.manual('Vuejs-api installed!');
       },
       plugin() {
-        return this.api;
+        return this.$api;
       }
     }
   };
