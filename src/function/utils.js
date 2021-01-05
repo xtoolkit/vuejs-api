@@ -39,7 +39,7 @@ export function unReactive(data) {
   return false;
 }
 
-export function arrayInclude(array, target) {
+export function inArray(array, target) {
   for (let i = 0; i < array.length; i++) {
     if (array[i] === target) {
       return true;

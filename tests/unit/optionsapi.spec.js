@@ -32,7 +32,7 @@ describe('options api components test', () => {
     wrapper.vm.changePage();
     await fetchWait(wrapper.vm.users);
     expect(wrapper.find('.view').text()).toBe('page: 8');
-  }, 6000);
+  });
 
   it('cancel on unmount event', async () => {
     const wrapper = plugin(Basic, {

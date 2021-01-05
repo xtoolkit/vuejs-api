@@ -10,8 +10,8 @@
   import {useApi} from '../../helper';
   export default {
     setup() {
-      const api = useApi();
-      const users = api.fetch('user/list');
+      const {fetch} = useApi();
+      const users = fetch('user/list');
       return {
         users
       };

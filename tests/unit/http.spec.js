@@ -44,5 +44,5 @@ describe('http request test', () => {
     expect(req.value.status).toBe(-1);
     expect(req.value.error).toBe(true);
     expect(typeof req.value.errordata).toBe('object');
-  });
+  }, 9000);
 });

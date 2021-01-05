@@ -4,17 +4,14 @@ import {getMethods, hotReload} from './utils';
 
 export function apiSetByVersion(ver, app, api) {
   if (ver === 3) {
-    api.updateContext(app);
-    app.provide('api', api);
-    app.mixin(mixin(3));
+    api.updateVueContext(app);
+    app.provide('api', api.wrapper);
   } else if (ver === 2) {
-    app.prototype.$api = api;
-    app.mixin(mixin(2));
+    app.prototype.$api = api.wrapper;
   } else {
-    throw new Error(
-      '[Vuejs-Api] Error: this plugin only available on Vue 2 and 3 version'
-    );
+    throw new Error('[Vuejs-Api] Error: This plugin only works in Vue 2 and 3');
   }
+  app.mixin(mixin(ver, api));
 }
 
 export function install(app, options = {}) {

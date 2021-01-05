@@ -8,7 +8,7 @@
     api: {},
     computed: {
       install() {
-        return this.$api.manual('Vuejs-api installed!');
+        return this.$api.instance.methods.manual('Vuejs-api installed!');
       },
       plugin() {
         return this.$api;

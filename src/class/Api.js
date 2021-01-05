@@ -11,30 +11,22 @@ export class Api {
     this.options = options;
     this.methods = {
       manual: config => config,
-      graphql: config => graphql.apply(this, [config])
+      graphql: graphql.bind(this)
     };
-    this.setupAxios();
-  }
-
-  updateContext(ctx) {
-    this.ctx = ctx;
-    this.init = true;
-  }
-
-  setupAxios() {
     this.$axios = axios.create(this.options.axios || {});
     this.$axios.CancelToken = axios.CancelToken;
     this.$axios.isCancel = axios.isCancel;
   }
 
-  updateMethods(methods) {
-    for (const method in methods) {
-      this.methods[method] = config => methods[method].apply(this, [config]);
-    }
+  updateVueContext(ctx) {
+    this.ctx = ctx;
+    this.init = true;
   }
 
-  manual(config) {
-    return config;
+  updateMethods(methods) {
+    for (const method in methods) {
+      this.methods[method] = methods[method].bind(this);
+    }
   }
 
   createContext() {
@@ -74,15 +66,15 @@ export class Api {
     }
   }
 
-  promise(method, config = {}) {
-    return this.gate(method, config, 'promise');
-  }
-
-  fetch(method, config = {}) {
-    return this.gate(method, config, 'fetch');
-  }
-
-  initial(method, config = {}) {
-    return this.gate(method, config, 'initial');
+  get wrapper() {
+    const o = {
+      promise: (method, config = {}) => this.gate(method, config, 'promise'),
+      fetch: (method, config = {}) => this.gate(method, config, 'fetch'),
+      initial: (method, config = {}) => this.gate(method, config, 'initial')
+    };
+    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+      o.instance = this;
+    }
+    return o;
   }
 }

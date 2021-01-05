@@ -1,10 +1,26 @@
 import {plugin, methods, fetchWait} from '../helper';
+import {hotReload} from '../../src/function/utils';
 import InstallPlugin from '../components/InstallPlugin';
 const {vm} = plugin(InstallPlugin, {
   methods
 });
 
 describe('other Api function test', () => {
+  it('hot reload', () => {
+    let called = false;
+    hotReload(
+      {
+        accept: (a, b) => {
+          b();
+          called = true;
+        }
+      },
+      true,
+      () => {}
+    );
+    expect(called).toBe(true);
+  });
+
   it('manual', async () => {
     let params;
     let single;
@@ -41,7 +57,7 @@ describe('other Api function test', () => {
     });
     await req.value.refresh();
     expect(single).toBe(123);
-  }, 6000);
+  });
 
   it('initial method check', async () => {
     const req = vm.$api.initial('user/list', {
@@ -69,7 +85,7 @@ describe('other Api function test', () => {
     expect(req.value.data.items[0].id).toBe(777);
     await req.value.pagination.append();
     expect(req.value.pagination.page).toBe(1);
-  }, 6000);
+  });
 
   it('initial method with empty input', () => {
     const req = vm.$api.initial('user/list', {
@@ -82,11 +98,11 @@ describe('other Api function test', () => {
     expect(req.value.pagination.page).toBe(0);
     const req2 = vm.$api.initial('user/list');
     expect(req2.value.data.pages).toBe(1);
-  }, 6000);
+  });
 
   it('undefined method', () => {
-    expect(vm.$api.gate('user/list', {})).toBe(undefined);
-  }, 6000);
+    expect(vm.$api.instance.gate('user/list', {})).toBe(undefined);
+  });
 });
 
 describe('other Xetch function test', () => {

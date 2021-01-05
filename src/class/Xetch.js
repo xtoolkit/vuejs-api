@@ -1,5 +1,5 @@
 import {unReactive} from '../function/utils';
-import {arrayInclude} from '../function/utils';
+import {inArray} from '../function/utils';
 
 export class Xetch {
   constructor({ver, axios, api, config, globalConfig, context}) {
@@ -41,7 +41,7 @@ export class Xetch {
   }
 
   get hasRequestData() {
-    return arrayInclude(['post', 'put', 'path', 'delete'], this.config.method);
+    return inArray(['post', 'put', 'path', 'delete'], this.config.method);
   }
 
   updateConfig(config) {
@@ -66,9 +66,9 @@ export class Xetch {
         const item = this.preConfigs[config][i];
         const type = typeof item;
         if (
-          arrayInclude(this.hooks, i) &&
+          inArray(this.hooks, i) &&
           type === 'function' &&
-          !arrayInclude(this.hook[i], item)
+          !inArray(this.hook[i], item)
         ) {
           this.hook[i].push(item);
           continue;
@@ -327,7 +327,7 @@ export class Xetch {
     }
     this.initTools = true;
     ['refresh', '$refresh', 'updateConfig'].forEach(tool => {
-      this.state[tool] = a => this[tool](a);
+      this.state[tool] = this[tool].bind(this);
     });
     if (this.hasPagination) {
       [
@@ -340,7 +340,7 @@ export class Xetch {
         'prev',
         '$prev'
       ].forEach(tool => {
-        this.state.pagination[tool] = (a, b) => this[tool](a, b);
+        this.state.pagination[tool] = this[tool].bind(this);
       });
     }
   }

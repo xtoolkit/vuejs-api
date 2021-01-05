@@ -1,6 +1,5 @@
 import {plugin, methods} from '../helper';
 import InstallPlugin from '../components/InstallPlugin';
-import {hotReload} from '../../src/function/utils';
 import {apiSetByVersion} from '../../src/function/install';
 
 describe('prepair test', () => {
@@ -24,7 +23,7 @@ describe('prepair test', () => {
       msg = e.message;
     }
     expect(msg).toBe(
-      '[Vuejs-Api] Error: this plugin only available on Vue 2 and 3 version'
+      '[Vuejs-Api] Error: This plugin only works in Vue 2 and 3'
     );
   });
 
@@ -33,7 +32,7 @@ describe('prepair test', () => {
       test: 2
     };
     const {vm} = plugin(InstallPlugin, options);
-    expect(vm.plugin.options).toBe(options);
+    expect(vm.plugin.instance.options).toBe(options);
   });
 
   it('set manual methods', () => {
@@ -43,7 +42,7 @@ describe('prepair test', () => {
       }
     };
     const {vm} = plugin(InstallPlugin, options);
-    expect(typeof vm.plugin.methods['user/list']).toBe('function');
+    expect(typeof vm.plugin.instance.methods['user/list']).toBe('function');
   });
 
   it('set methods from directory', () => {
@@ -51,21 +50,6 @@ describe('prepair test', () => {
       methods
     };
     const {vm} = plugin(InstallPlugin, options);
-    expect(typeof vm.plugin.methods['user/list']).toBe('function');
-  });
-
-  it('hot reload', () => {
-    let called = false;
-    hotReload(
-      {
-        accept: (a, b) => {
-          b();
-          called = true;
-        }
-      },
-      true,
-      () => {}
-    );
-    expect(called).toBe(true);
+    expect(typeof vm.plugin.instance.methods['user/list']).toBe('function');
   });
 });

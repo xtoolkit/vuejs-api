@@ -1,7 +1,7 @@
 import {inject} from 'vue';
-import {arrayInclude} from './utils';
+import {inArray} from './utils';
 
-export default function (ver) {
+export default function (ver, instance) {
   return {
     beforeCreate() {
       this._api = this.$options.api || false;
@@ -12,7 +12,7 @@ export default function (ver) {
         }
       } else if (ver === 2) {
         if (typeof this.$api !== 'undefined' && this.$api.init === false) {
-          this.$api.updateContext(this);
+          instance.updateVueContext(this);
         }
       }
     },
@@ -30,9 +30,9 @@ export default function (ver) {
       if (!this._api) {
         return false;
       }
-      for (const api in this._api) {
-        if (Object.keys(this._api[api]).length === 0) {
-          this[api] = this.$api.createContext();
+      for (const item in this._api) {
+        if (Object.keys(this._api[item]).length === 0) {
+          this[item] = instance.createContext();
         }
       }
     },
@@ -51,7 +51,7 @@ export default function (ver) {
           config[key] = item[key];
           if (
             typeof config[key] === 'function' &&
-            !arrayInclude(
+            !inArray(
               [
                 'onUploadProgress',
                 'onDownloadProgress',
@@ -61,7 +61,7 @@ export default function (ver) {
               key
             )
           ) {
-            config[key] = () => item[key].apply(this);
+            config[key] = item[key].bind(this);
           }
         });
         let method = item.method;
