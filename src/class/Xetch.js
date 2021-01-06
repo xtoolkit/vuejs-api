@@ -2,11 +2,12 @@ import {unReactive} from '../function/utils';
 import {inArray} from '../function/utils';
 
 export class Xetch {
-  constructor({ver, axios, api, config, globalConfig, context}) {
+  constructor(ver, axios, api, config, globalConfig, vue, res) {
     this.ver = ver;
     this.axios = axios;
     this.apiContext = api;
-    this.context = context;
+    this.vue = vue;
+    this.res = res;
 
     // default
     this.requestData = undefined; // to methods request swap
@@ -95,7 +96,8 @@ export class Xetch {
         this.state.pagination.page = page;
       } else {
         this.state.pagination = {
-          page
+          page,
+          appending: false
         };
       }
     }
@@ -138,6 +140,9 @@ export class Xetch {
     const prePagination = this.config.params
       ? this.config.params.pagination || false
       : false;
+    if (typeof this.config.params === 'undefined') {
+      this.config.params = {};
+    }
     const config = this.apiContext(this.config);
     this.preConfigs.method = config;
     this.renderAzPreConfig(['method']);
@@ -154,16 +159,6 @@ export class Xetch {
     this.explodeRequestData();
     this.setTools();
   }
-
-  prepairCancel() {
-    const die = this.axios.CancelToken.source();
-    this.fetchConfig.cancelToken = die.token;
-    this.state.cancel = (x = 'cancelled') => {
-      this.state.errordata = x;
-      return die.cancel(x);
-    };
-  }
-
   onSeccessful({status, data}) {
     this.state.status = status;
     if (this.defaultResponseData === null) {
@@ -173,7 +168,9 @@ export class Xetch {
       fn.apply(this, [data]);
     });
     this.state.loading = false;
-    this.state.appending = false;
+    if (this.hasPagination) {
+      this.state.pagination.appending = false;
+    }
   }
 
   onFailed(e) {
@@ -191,14 +188,23 @@ export class Xetch {
       data = e.message;
     }
     this.state.loading = false;
-    this.state.appending = false;
+    if (this.hasPagination) {
+      this.state.pagination.appending = false;
+    }
     this.state.error = true;
     this.state.errordata = data;
     this.state.status = status;
   }
 
   request(normal = false) {
-    this.prepairCancel();
+    if (this.useTools) {
+      const die = this.axios.CancelToken.source();
+      this.fetchConfig.cancelToken = die.token;
+      this.state.cancel = (x = 'cancelled') => {
+        this.state.errordata = x;
+        return die.cancel(x);
+      };
+    }
     this.hook.onRequest.forEach(fn => {
       fn.apply(this);
     });
@@ -210,16 +216,16 @@ export class Xetch {
       .then(res => {
         this.onSeccessful(res);
         if (!normal) {
-          return this.context;
+          return this.res;
         }
       })
       .catch(e => {
         this.onFailed(e);
         if (!normal) {
-          return this.context;
+          return this.res;
         }
       });
-    return normal ? this.context : gate;
+    return normal ? this.res : gate;
   }
 
   initial(initial) {
@@ -229,12 +235,12 @@ export class Xetch {
         this.state[i] = init[i];
       }
     });
-    return this.context;
+    return this.res;
   }
 
   // Tools
   get state() {
-    return this.ver === 3 ? this.context.value : this.context;
+    return this.ver === 3 ? this.res.value : this.res;
   }
 
   get data() {
@@ -261,8 +267,16 @@ export class Xetch {
     this.state.pagination.page = page;
   }
 
+  get useTools() {
+    return typeof this.config.tools === 'boolean' ? this.config.tools : true;
+  }
+
   preRefetch(page, append) {
-    this.state[append ? 'appending' : 'loading'] = true;
+    if (append) {
+      this.state.pagination.appending = true;
+    } else {
+      this.state.loading = true;
+    }
     this.state.error = false;
     this.state.status = -1;
     this.state.errordata = null;
@@ -322,6 +336,12 @@ export class Xetch {
   }
 
   setTools() {
+    if (!this.useTools) {
+      if (this.state.cancel) {
+        this.state.cancel = undefined;
+      }
+      return false;
+    }
     if (this.initTools) {
       return false;
     }

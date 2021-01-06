@@ -1,5 +1,5 @@
 export default function ({params}) {
-  const page = params?.pagination.page || 1;
+  const page = params.pagination?.page || 1;
   return {
     method: 'get',
     url: 'https://gorest.co.in/public-api/posts',

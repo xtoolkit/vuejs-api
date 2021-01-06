@@ -22,19 +22,9 @@ export default function (ver, instance) {
       }
       const o = {};
       for (const item in this._api) {
-        o[item] = {};
+        o[item] = instance.createRes(false);
       }
       return o;
-    },
-    created() {
-      if (!this._api) {
-        return false;
-      }
-      for (const item in this._api) {
-        if (Object.keys(this._api[item]).length === 0) {
-          this[item] = instance.createContext();
-        }
-      }
     },
     beforeMount() {
       if (!this._api) {

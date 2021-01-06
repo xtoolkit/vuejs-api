@@ -1,10 +1,10 @@
 import {mount} from '@vue/test-utils';
 import {watch} from 'vue';
-import Plugin from '../src';
+import vuejsApi, {gql, useApi} from '../src';
 export const plugin = (component, options) =>
   mount(component, {
     global: {
-      plugins: [options ? [Plugin.install, options] : Plugin.install]
+      plugins: [options ? [vuejsApi, options] : vuejsApi]
     }
   });
 
@@ -68,6 +68,4 @@ export const fetchWait = (target, loading = true, fn) =>
       fn();
     }
   });
-
-export const useApi = Plugin.useApi;
-export const gql = Plugin.gql;
+export {useApi, gql};

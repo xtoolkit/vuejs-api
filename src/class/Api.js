@@ -7,7 +7,7 @@ export class Api {
   constructor(ver, options) {
     this.ver = ver;
     this.init = false;
-    this.ctx = {};
+    this.vue = {};
     this.options = options;
     this.methods = {
       manual: config => config,
@@ -19,7 +19,7 @@ export class Api {
   }
 
   updateVueContext(ctx) {
-    this.ctx = ctx;
+    this.vue = ctx;
     this.init = true;
   }
 
@@ -29,17 +29,16 @@ export class Api {
     }
   }
 
-  createContext() {
+  createRes(reactive = true) {
     const context = {
       data: null,
       loading: true,
-      appending: false,
       error: false,
       errordata: null,
       status: -1,
       cancel: () => {}
     };
-    return this.ver === 3 ? ref(context) : context;
+    return this.ver === 3 && reactive ? ref(context) : context;
   }
 
   gate(method, config, mode) {
@@ -48,14 +47,15 @@ export class Api {
       method = 'graphql';
     }
 
-    const gate = new Xetch({
-      ver: this.ver,
-      axios: this.$axios,
-      api: this.methods[method],
+    const gate = new Xetch(
+      this.ver,
+      this.$axios,
+      this.methods[method],
       config,
-      globalConfig: this.options.default || {},
-      context: this.createContext()
-    });
+      this.options.default || {},
+      this.vue,
+      this.createRes()
+    );
 
     if (mode === 'promise') {
       return gate.request();

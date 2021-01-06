@@ -30,6 +30,12 @@ const configs = [
     file: 'dist/vuejs-api.cjs.js',
     format: 'cjs',
     env: 'development'
+  },
+  {
+    input: 'src/index.nuxt.js',
+    file: 'dist/vuejs-api.nuxt.js',
+    format: 'es',
+    env: 'development'
   }
 ];
 
@@ -59,7 +65,7 @@ function createEntry(config) {
   };
 
   if (config.format === 'iife' || config.format === 'umd') {
-    c.output.name = c.output.name || 'VuejsApi';
+    c.output.name = c.output.name || 'vuejsApi';
   }
 
   if (config.transpile !== false) {

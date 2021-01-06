@@ -7,7 +7,8 @@ const {compress} = require('brotli');
 const files = [
   'dist/vuejs-api.esm.js',
   'dist/vuejs-api.global.js',
-  'dist/vuejs-api.cjs.js'
+  'dist/vuejs-api.cjs.js',
+  'dist/vuejs-api.nuxt.js'
 ];
 
 async function run() {
