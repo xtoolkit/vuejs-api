@@ -62,5 +62,5 @@ describe('graphql test', () => {
       }
     );
     expect(req.value.data.data.country.capital).toBe('Tehran');
-  });
+  }, 10000);
 });

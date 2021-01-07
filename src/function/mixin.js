@@ -1,8 +1,7 @@
 import {inject} from 'vue';
 import {inArray} from './utils';
-
 export default function (ver, instance) {
-  return {
+  const o = {
     beforeCreate() {
       this._api = this.$options.api || false;
       delete this.$options.api;
@@ -30,15 +29,15 @@ export default function (ver, instance) {
       if (!this._api) {
         return false;
       }
-      for (const api in this._api) {
-        const item = this._api[api];
-        const keys = Object.keys(item);
+      for (const item in this._api) {
+        const api = this._api[item];
+        const keys = Object.keys(api);
         if (keys.length === 0) {
           continue;
         }
         const config = {};
         keys.forEach(key => {
-          config[key] = item[key];
+          config[key] = api[key];
           if (
             typeof config[key] === 'function' &&
             !inArray(
@@ -51,23 +50,26 @@ export default function (ver, instance) {
               key
             )
           ) {
-            config[key] = item[key].bind(this);
+            config[key] = api[key].bind(this);
           }
         });
-        let method = item.method;
+        let method = api.method;
         if (typeof method === 'function') {
           method = method.apply(this);
         }
-        this[api] = this.$api.fetch(method, config);
-      }
-    },
-    beforeUnmount() {
-      if (!this._api) {
-        return false;
-      }
-      for (const api in this._api) {
-        this[api].cancel();
+        this[item] = this.$api.fetch(method, config);
       }
     }
   };
+
+  o[ver === 3 ? 'beforeUnmount' : 'beforeDestroy'] = function () {
+    if (!this._api) {
+      return false;
+    }
+    for (const item in this._api) {
+      this[item].cancel();
+    }
+  };
+
+  return o;
 }
