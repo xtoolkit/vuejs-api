@@ -99,13 +99,9 @@ describe('other Api function test', () => {
     const req2 = vm.$api.initial('user/list');
     expect(req2.value.data.pages).toBe(1);
   });
-
-  it('undefined method', () => {
-    expect(vm.$api.instance.gate('user/list', {})).toBe(undefined);
-  });
 });
 
-describe('other Xetch function test', () => {
+describe('Xetch async tools', () => {
   it('promise methods', async () => {
     const req = await vm.$api.promise('user/list', {
       params: {
@@ -129,7 +125,7 @@ describe('other Xetch function test', () => {
     expect(req.value.pagination.page).toBe(2);
   });
 
-  it('fetch methods', async () => {
+  it('Xetch sync tools', async () => {
     const req = await vm.$api.promise('user/list', {
       params: {
         pagination: {

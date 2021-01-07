@@ -8,7 +8,6 @@ export const plugin = (component, options) =>
     }
   });
 
-// This condition actually should detect if it's an Node environment
 if (typeof require.context === 'undefined') {
   const fs = require('fs');
   const path = require('path');

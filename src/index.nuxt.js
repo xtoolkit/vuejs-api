@@ -5,5 +5,6 @@ import {Api} from './class/Api';
 import mixin from './function/mixin';
 
 export default Api;
+export const version = '__VERSION__';
 
 export {mixin, getMethods, useApi, gql, hotReload};

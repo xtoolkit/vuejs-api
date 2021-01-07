@@ -57,22 +57,18 @@ export class Api {
       this.createRes()
     );
 
-    if (mode === 'promise') {
-      return gate.request();
-    } else if (mode === 'fetch') {
-      return gate.request(true);
-    } else if (mode === 'initial') {
+    if (mode === 'initial') {
       return gate.initial(config.initial || {});
     }
+    return gate.request(mode === 'promise');
   }
 
   get wrapper() {
-    const o = {
-      promise: (method, config = {}) => this.gate(method, config, 'promise'),
-      fetch: (method, config = {}) => this.gate(method, config, 'fetch'),
-      initial: (method, config = {}) => this.gate(method, config, 'initial')
-    };
-    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+    const o = {};
+    ['promise', 'fetch', 'initial'].forEach(mode => {
+      o[mode] = (method, config = {}) => this.gate(method, config, mode);
+    });
+    if (process.env.NODE_ENV === 'test') {
       o.instance = this;
     }
     return o;

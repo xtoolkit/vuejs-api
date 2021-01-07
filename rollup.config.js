@@ -1,6 +1,7 @@
 import buble from '@rollup/plugin-buble';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
 import {terser} from 'rollup-plugin-terser';
 import pkg from './package.json';
 
@@ -15,7 +16,6 @@ const configs = [
     input: 'src/index.js',
     file: 'dist/vuejs-api.esm.js',
     format: 'es',
-    browser: true,
     env: 'development'
   },
   {
@@ -64,9 +64,20 @@ function createEntry(config) {
     }
   };
 
-  if (config.format === 'iife' || config.format === 'umd') {
+  if (config.format === 'iife') {
     c.output.name = c.output.name || 'vuejsApi';
   }
+
+  if (config.format === 'cjs') {
+    c.output.exports = 'auto';
+  }
+
+  c.plugins.push(
+    replace({
+      __VERSION__: pkg.version,
+      'process.env.NODE_ENV': `'${config.env}'`
+    })
+  );
 
   if (config.transpile !== false) {
     c.plugins.push(buble());

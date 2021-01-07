@@ -1,5 +1,5 @@
 import VuejsApi from '../dist/vuejs-api.cjs.js';
 
-const {install, useApi, gql} = VuejsApi;
+const {version, install, useApi, gql} = VuejsApi;
 
-export {VuejsApi as default, install, useApi, gql};
+export {VuejsApi as default, version, install, useApi, gql};

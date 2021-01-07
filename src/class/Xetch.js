@@ -196,7 +196,7 @@ export class Xetch {
     this.state.status = status;
   }
 
-  request(normal = false) {
+  request(promise) {
     if (this.useTools) {
       const die = this.axios.CancelToken.source();
       this.fetchConfig.cancelToken = die.token;
@@ -215,17 +215,17 @@ export class Xetch {
     )
       .then(res => {
         this.onSeccessful(res);
-        if (!normal) {
+        if (promise) {
           return this.res;
         }
       })
       .catch(e => {
         this.onFailed(e);
-        if (!normal) {
+        if (promise) {
           return this.res;
         }
       });
-    return normal ? this.res : gate;
+    return promise ? gate : this.res;
   }
 
   initial(initial) {
@@ -295,12 +295,12 @@ export class Xetch {
 
   getPage(page, append = false) {
     this.preRefetch(page, append);
-    return this.request();
+    return this.request(true);
   }
 
   $getPage(page, append = false) {
     this.preRefetch(page, append);
-    this.request(true);
+    this.request(false);
   }
 
   refresh() {
