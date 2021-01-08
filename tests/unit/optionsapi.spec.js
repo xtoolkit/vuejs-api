@@ -35,12 +35,18 @@ describe('options api components test', () => {
   });
 
   it('cancel on unmount event', async () => {
+    let cancel = false;
     const wrapper = plugin(Basic, {
-      methods
+      methods,
+      default: {
+        onCancel() {
+          cancel = true;
+        }
+      }
     });
     expect(wrapper.find('.view2').text()).toBe('pre loading');
     await fetchWait(wrapper.vm.users, true, wrapper.unmount());
-    expect(wrapper.vm.users.errordata).toBe('cancelled');
+    expect(cancel).toBe(true);
   });
 });
 // add graphql

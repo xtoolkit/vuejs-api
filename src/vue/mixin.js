@@ -1,5 +1,6 @@
 import {inject} from 'vue';
-import {inArray} from './utils';
+import {inArray} from '../utils';
+import events from '../events';
 export default function (ver, instance) {
   const o = {
     beforeCreate() {
@@ -38,18 +39,7 @@ export default function (ver, instance) {
         const config = {};
         keys.forEach(key => {
           config[key] = api[key];
-          if (
-            typeof config[key] === 'function' &&
-            !inArray(
-              [
-                'onUploadProgress',
-                'onDownloadProgress',
-                'onRequest',
-                'onResponse'
-              ],
-              key
-            )
-          ) {
+          if (typeof config[key] === 'function' && !inArray(events, key)) {
             config[key] = api[key].bind(this);
           }
         });

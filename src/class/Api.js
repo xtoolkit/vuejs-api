@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {ref} from 'vue';
 import {Xetch} from './Xetch';
-import graphql from '../function/graphql';
+import graphql from '../graphql/method';
 
 export class Api {
   constructor(ver, options) {

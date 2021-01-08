@@ -1,5 +1,5 @@
 import {ref, reactive} from 'vue';
-import {unReactive} from '../../src/function/utils';
+import {unReactive} from '../../src/utils';
 
 describe('unReactive data test', () => {
   it('object data from ref', () => {

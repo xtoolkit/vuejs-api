@@ -45,4 +45,19 @@ describe('http request test', () => {
     expect(req.value.error).toBe(true);
     expect(typeof req.value.errordata).toBe('object');
   }, 9000);
+
+  it('request timeout', async () => {
+    console.error = jest.fn();
+    let timeout = false;
+    await vm.$api.promise('manual', {
+      url: 'http://thisisnotaserver/foo',
+      options: {
+        timeout: 50
+      },
+      onTimeout() {
+        timeout = true;
+      }
+    });
+    expect(timeout).toBe(true);
+  }, 9000);
 });

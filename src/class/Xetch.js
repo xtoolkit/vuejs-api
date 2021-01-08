@@ -1,5 +1,5 @@
-import {unReactive} from '../function/utils';
-import {inArray} from '../function/utils';
+import {unReactive, inArray} from '../utils';
+import events from '../events';
 
 export class Xetch {
   constructor(ver, axios, api, config, globalConfig, vue, res) {
@@ -12,12 +12,6 @@ export class Xetch {
     // default
     this.requestData = undefined; // to methods request swap
     this.defaultResponseData = null;
-    this.hooks = [
-      'onUploadProgress',
-      'onDownloadProgress',
-      'onRequest',
-      'onResponse'
-    ];
     this.hook = {};
     this.initialHooks();
     this.preConfigs = {
@@ -36,7 +30,7 @@ export class Xetch {
   }
 
   initialHooks() {
-    this.hooks.forEach(x => {
+    events.forEach(x => {
       this.hook[x] = [];
     });
   }
@@ -67,7 +61,7 @@ export class Xetch {
         const item = this.preConfigs[config][i];
         const type = typeof item;
         if (
-          inArray(this.hooks, i) &&
+          inArray(events, i) &&
           type === 'function' &&
           !inArray(this.hook[i], item)
         ) {
@@ -184,6 +178,7 @@ export class Xetch {
       };
     } else if (e.request) {
       data = e.request;
+      data.message = e.message;
     } else {
       data = e.message;
     }
@@ -194,17 +189,29 @@ export class Xetch {
     this.state.error = true;
     this.state.errordata = data;
     this.state.status = status;
+    if (/^timeout/.test(data.message)) {
+      this.hook.onTimeout.forEach(fn => {
+        fn.apply(this);
+      });
+    }
+  }
+
+  setCancel() {
+    if (!this.useTools) {
+      return false;
+    }
+    const die = this.axios.CancelToken.source();
+    this.fetchConfig.cancelToken = die.token;
+    this.state.cancel = (x = 'cancelled') => {
+      this.hook.onCancel.forEach(fn => {
+        fn.apply(this);
+      });
+      return die.cancel(x);
+    };
   }
 
   request(promise) {
-    if (this.useTools) {
-      const die = this.axios.CancelToken.source();
-      this.fetchConfig.cancelToken = die.token;
-      this.state.cancel = (x = 'cancelled') => {
-        this.state.errordata = x;
-        return die.cancel(x);
-      };
-    }
+    this.setCancel();
     this.hook.onRequest.forEach(fn => {
       fn.apply(this);
     });

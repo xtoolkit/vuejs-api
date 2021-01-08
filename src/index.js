@@ -1,6 +1,6 @@
-import {install} from './function/install';
-import {useApi} from './function/inject';
-import {gql} from './function/graphqlTag';
+import {install} from './vue/install';
+import {useApi} from './vue/inject';
+import {gql} from './graphql/tag';
 
 install.version = '__VERSION__';
 

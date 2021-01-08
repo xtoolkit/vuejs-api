@@ -1,6 +1,6 @@
 import {plugin, methods} from '../helper';
 import InstallPlugin from '../components/InstallPlugin';
-import {apiSetByVersion} from '../../src/function/install';
+import {apiSetByVersion} from '../../src/vue/install';
 
 describe('prepair test', () => {
   it('plugin install', () => {

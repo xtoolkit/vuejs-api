@@ -1,5 +1,6 @@
 import {plugin, methods, fetchWait} from '../helper';
-import {hotReload} from '../../src/function/utils';
+import {hotReload} from '../../src/utils';
+import mixin from '../../src/vue/mixin';
 import InstallPlugin from '../components/InstallPlugin';
 const {vm} = plugin(InstallPlugin, {
   methods
@@ -151,5 +152,41 @@ describe('Xetch async tools', () => {
     req.value.$refresh(2);
     await fetchWait(req.value);
     expect(req.value.pagination.page).toBe(2);
+  });
+
+  it('not use tools', async () => {
+    const req = await vm.$api.promise('user/list', {
+      tools: false
+    });
+    expect(typeof req.value.refresh).toBe('undefined');
+  });
+
+  it('skip mixin vue 2', () => {
+    let trust = false;
+    const app = {
+      updateVueContext() {
+        trust = true;
+      }
+    };
+    const mix = mixin(2, app);
+    mix.$options = {
+      api: {}
+    };
+    mix.$api = {
+      init: false
+    };
+    mix.beforeCreate();
+    mix.$api.init = true;
+    mix.beforeCreate();
+    expect(trust).toBe(true);
+  });
+
+  it('skip mixin vue else', () => {
+    const mix = mixin(1, {});
+    mix.$options = {
+      api: {}
+    };
+    mix.beforeCreate();
+    expect(true).toBe(true);
   });
 });

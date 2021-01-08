@@ -1,6 +1,6 @@
 import {Api} from '../class/Api';
 import mixin from './mixin';
-import {getMethods, hotReload} from './utils';
+import {getMethods, hotReload} from '../utils';
 
 export function apiSetByVersion(ver, app, api) {
   if (ver === 3) {

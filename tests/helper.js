@@ -1,6 +1,7 @@
 import {mount} from '@vue/test-utils';
 import {watch} from 'vue';
 import vuejsApi, {gql, useApi} from '../src';
+import {version} from '../src/index.nuxt';
 export const plugin = (component, options) =>
   mount(component, {
     global: {
@@ -67,4 +68,4 @@ export const fetchWait = (target, loading = true, fn) =>
       fn();
     }
   });
-export {useApi, gql};
+export {useApi, gql, version};
