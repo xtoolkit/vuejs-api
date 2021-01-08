@@ -52,7 +52,7 @@ describe('http request test', () => {
     await vm.$api.promise('manual', {
       url: 'http://thisisnotaserver/foo',
       options: {
-        timeout: 50
+        timeout: 1
       },
       onTimeout() {
         timeout = true;
