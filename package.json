@@ -1,7 +1,7 @@
 {
   "name": "vuejs-api",
   "version": "1.1.5",
-  "description": "A Client Api management for Vue",
+  "description": "Api management for vue client",
   "main": "dist/vuejs-api.cjs.js",
   "exports": {
     ".": {
