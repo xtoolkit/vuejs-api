@@ -1,1 +1,11 @@
 node_modules
+src
+tests
+rollup.config.js
+yarn.lock 
+package-lock.json
+.eslintrc.js
+.eslintignore
+build.js
+jestconfig.js
+TODO.md

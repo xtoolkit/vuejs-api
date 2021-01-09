@@ -1,36 +1,36 @@
 import Vue from 'vue';
-import {Api, installSSR, getMethods} from 'vuejs-api';
+import vuejsApi, {mixin, getMethods, hotReload} from 'vuejs-api/dist/vuejs-api.nuxt';
 
-const config = <%= serialize(options, null, 2) %>;
-
-if (typeof config.src !== 'undefined') {
-  config.src = require.context(
-    '<%= options.src %>',
+const options = <%= serialize(options, null, 2) %>;
+let methods = null;
+if (options.methods) {
+  methods = require.context(
+    '<%= options.methods %>',
     true,
     /([a-zA-Z_]+)\.js$/i
   );
 }
+const api = new vuejsApi(2, options);
+if (methods !== null) {
+  if (typeof methods === 'object') {
+    api.updateMethods(methods);
+  } else {
+    api.updateMethods(getMethods(methods));
+    if (process.client) {
+      hotReload(module.hot, methods.id, window.location.reload.bind(window.location));
+    }
+  }
+}
 
-Vue.use(installSSR);
+if (!Vue.__vuejs_api__) {
+  Vue.__vuejs_api__ = true
+  Vue.mixin(mixin(2, api)) // Set up your mixin then
+}
 
 export default function (ctx, inject) {
   if (typeof ctx.$api !== 'undefined') {
     return false;
   }
-
-  const api = new Api(config);
-
-  api.updateContext(ctx);
-  inject('api', api);
-
-  if (typeof config.src === 'undefined') {
-    return false;
-  }
-
-  api.updateMethods(getMethods(config.src));
-  if (module.hot) {
-    module.hot.accept(config.src.id, () => {
-      window.location.reload();
-    });
-  }
+  api.setAppContext(ctx);
+  inject('api', api.wrapper);
 }

@@ -1,5 +1,7 @@
 dist/
 package-lock.json
+yarn.lock 
+TODO.md
 
 # Created by https://www.gitignore.io/api/webstorm,phpstorm,osx,linux,node
 
