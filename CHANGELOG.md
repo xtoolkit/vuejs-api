@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [2.0.1](https://github.com/xtoolkit/vuejs-api/compare/v1.1.5...v2.0.1) (2021-01-09)
 
+- forget build :(
+
 ## [2.0.0](https://github.com/xtoolkit/vuejs-api/compare/v1.1.5...v2.0.0) (2021-01-09)
 
 ### Bold changes:

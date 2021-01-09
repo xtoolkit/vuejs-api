@@ -1,5 +1,5 @@
 import {plugin, fetchWait, methods} from '../helper';
-import InstallPlugin from '../components/InstallPlugin.vue';
+import InstallPlugin from '../components/InstallPlugin';
 
 const url = 'https://gorest.co.in/public-api/posts';
 const trust = data => data.meta.pagination.page;

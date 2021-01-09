@@ -47,3 +47,14 @@ export function inArray(array, target) {
   }
   return false;
 }
+
+export function mergeObject(a, b) {
+  for (const op in b) {
+    const element = b[op];
+    if (typeof a[op] === 'object') {
+      mergeObject(a[op], b[op]);
+    } else {
+      a[op] = element;
+    }
+  }
+}

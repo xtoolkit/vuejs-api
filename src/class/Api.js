@@ -53,7 +53,7 @@ export class Api {
       this.methods[method],
       config,
       this.options.default || {},
-      this.vue,
+      this.app,
       this.createRes()
     );
 

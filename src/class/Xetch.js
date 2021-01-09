@@ -1,12 +1,12 @@
-import {unReactive, inArray} from '../utils';
+import {unReactive, inArray, mergeObject} from '../utils';
 import events from '../events';
 
 export class Xetch {
-  constructor(ver, axios, api, config, globalConfig, vue, res) {
+  constructor(ver, axios, api, config, globalConfig, app, res) {
     this.ver = ver;
     this.axios = axios;
-    this.apiContext = api;
-    this.vue = vue;
+    this.apiMehtod = api;
+    this.app = app;
     this.res = res;
 
     // default
@@ -49,9 +49,7 @@ export class Xetch {
         this.preConfigs.update[key] = item;
         continue;
       }
-      for (const i in item) {
-        this.preConfigs.update[key][i] = item[i];
-      }
+      mergeObject(this.preConfigs.update[key], item);
     }
   }
 
@@ -77,9 +75,7 @@ export class Xetch {
           this.config[i] = applyed;
           continue;
         }
-        for (const name in applyed) {
-          this.config[i][name] = applyed[name];
-        }
+        mergeObject(this.config[i], applyed);
       }
     });
   }
@@ -137,7 +133,7 @@ export class Xetch {
     if (typeof this.config.params === 'undefined') {
       this.config.params = {};
     }
-    const config = this.apiContext(this.config);
+    const config = this.apiMehtod(this.config);
     this.preConfigs.method = config;
     this.renderAzPreConfig(['method']);
     this.defaultResponseData = config.default || null;
