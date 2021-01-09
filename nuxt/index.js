@@ -1,7 +1,7 @@
 const {resolve} = require('path');
 
 module.exports = function nuxtChimeraModule(moduleOptions) {
-  const options = Object.assign(this.options.api, moduleOptions);
+  const options = this.options.api || moduleOptions;
 
   this.addPlugin({
     src: resolve(__dirname, 'plugin.js'),
