@@ -12,7 +12,7 @@ export default function (ver, instance) {
         }
       } else if (ver === 2) {
         if (typeof this.$api !== 'undefined' && this.$api.init === false) {
-          instance.updateVueContext(this);
+          instance.setAppContext(this);
         }
       }
     },

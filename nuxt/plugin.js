@@ -31,6 +31,6 @@ export default function (ctx, inject) {
   if (typeof ctx.$api !== 'undefined') {
     return false;
   }
-  api.updateVueContext(ctx);
+  api.setAppContext(ctx);
   inject('api', api.wrapper);
 }

@@ -4,7 +4,7 @@ import {getMethods, hotReload} from '../utils';
 
 export function apiSetByVersion(ver, app, api) {
   if (ver === 3) {
-    api.updateVueContext(app);
+    api.setAppContext(app);
     app.provide('api', api.wrapper);
   } else if (ver === 2) {
     app.prototype.$api = api.wrapper;

@@ -7,7 +7,7 @@ export class Api {
   constructor(ver, options) {
     this.ver = ver;
     this.init = false;
-    this.vue = {};
+    this.app = {};
     this.options = options;
     this.methods = {
       manual: config => config,
@@ -18,8 +18,8 @@ export class Api {
     this.$axios.isCancel = axios.isCancel;
   }
 
-  updateVueContext(ctx) {
-    this.vue = ctx;
+  setAppContext(ctx) {
+    this.app = ctx;
     this.init = true;
   }
 
