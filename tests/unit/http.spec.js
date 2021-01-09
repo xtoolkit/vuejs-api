@@ -54,8 +54,7 @@ describe('http request test', () => {
   it('request timeout', async () => {
     console.error = jest.fn();
     let hook = false;
-    await vm.$api.promise('manual', {
-      url: 'http://thisisnotaserver/foo',
+    await vm.$api.promise('user/list', {
       options: {
         timeout: 1
       },
