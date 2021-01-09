@@ -4,5 +4,6 @@ export default [
   'onRequest',
   'onResponse',
   'onCancel',
-  'onTimeout'
+  'onTimeout',
+  'onError'
 ];

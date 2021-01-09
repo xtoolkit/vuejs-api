@@ -28,9 +28,14 @@ describe('http request test', () => {
   });
 
   it('faild response', async () => {
+    let hook = false;
     const req = await vm.$api.promise('manual', {
-      url: 'https://httpbin.org/test'
+      url: 'https://httpbin.org/test',
+      onError() {
+        hook = true;
+      }
     });
+    expect(hook).toBe(true);
     expect(req.value.status).toBe(404);
     expect(req.value.error).toBe(true);
     expect(req.value.errordata.headers['content-type']).toBe('text/html');
@@ -48,16 +53,16 @@ describe('http request test', () => {
 
   it('request timeout', async () => {
     console.error = jest.fn();
-    let timeout = false;
+    let hook = false;
     await vm.$api.promise('manual', {
       url: 'http://thisisnotaserver/foo',
       options: {
         timeout: 1
       },
       onTimeout() {
-        timeout = true;
+        hook = true;
       }
     });
-    expect(timeout).toBe(true);
+    expect(hook).toBe(true);
   }, 9000);
 });

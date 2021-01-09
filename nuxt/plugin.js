@@ -17,7 +17,7 @@ if (methods !== null) {
   } else {
     api.updateMethods(getMethods(methods));
     if (process.client) {
-      hotReload(module.hot, methods.id, window?.location.reload);
+      hotReload(module.hot, methods.id, window.location.reload.bind(window.location));
     }
   }
 }

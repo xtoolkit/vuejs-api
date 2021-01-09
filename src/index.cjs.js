@@ -1,5 +1,5 @@
-import {install} from './function/install';
-import {useApi} from './function/inject';
+import {install} from './vue/install';
+import {useApi} from './vue/inject';
 import {gql} from './graphql/tag';
 
 export default {

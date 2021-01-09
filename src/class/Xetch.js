@@ -189,6 +189,9 @@ export class Xetch {
     this.state.error = true;
     this.state.errordata = data;
     this.state.status = status;
+    this.hook.onError.forEach(fn => {
+      fn.apply(this, [data]);
+    });
     if (/^timeout/.test(data.message)) {
       this.hook.onTimeout.forEach(fn => {
         fn.apply(this);

@@ -27,7 +27,11 @@ export function install(app, options = {}) {
       api.updateMethods(methods);
     } else {
       api.updateMethods(getMethods(methods));
-      hotReload(module.hot, methods.id, window.location.reload);
+      hotReload(
+        module.hot,
+        methods.id,
+        window.location.reload.bind(window.location)
+      );
     }
   }
   apiSetByVersion(ver, app, api);

@@ -1,8 +1,8 @@
 import {getMethods, hotReload} from './utils';
 import {useApi} from './vue/inject';
-import {gql} from './graphql/tag';
 import {Api} from './class/Api';
 import mixin from './vue/mixin';
+import {gql} from './graphql/tag';
 
 export default Api;
 export const version = '__VERSION__';
