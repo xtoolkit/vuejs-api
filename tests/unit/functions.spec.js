@@ -164,7 +164,7 @@ describe('Xetch async tools', () => {
   it('skip mixin vue 2', () => {
     let trust = false;
     const app = {
-      updateVueContext() {
+      setAppContext() {
         trust = true;
       }
     };
